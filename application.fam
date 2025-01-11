@@ -1,0 +1,13 @@
+# For details & more options, see documentation/AppManifests.md in firmware repo
+
+App(
+    appid="yrm100",  # Must be unique
+    name="YRM100",  # Displayed in menus
+    apptype=FlipperAppType.EXTERNAL,
+    entry_point="main_entry",
+    stack_size=2 * 1024,
+    fap_category="misc",
+    requires=["gui"],
+    fap_icon="yrm100.png",  # 10x10 1-bit PNG
+    fap_icon_assets="images",  # Image assets to compile for this application
+)
