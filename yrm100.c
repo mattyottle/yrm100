@@ -22,26 +22,24 @@ bool main_entry(void* arg1) {
     furi_delay_ms(1000);
     furi_hal_vibro_on(false);
 
-    /*
     FURI_LOG_I(
         "MEMORY",
         "Heap used: %zu bytes, Heap free: %zu bytes",
         memmgr_get_total_heap(),
-        memmgr_get_free_heap());*/
+        memmgr_get_free_heap());
 
-    /*
     void* context[CONTEXT_SIZE] = {[gui_context] = NULL, [tag_data] = NULL};
 
     tag_data_init(context);
     //context[2] now points to a malloc'ed and partially initialized struct
 
     gui_init(context); //gui_context is an enum for 1, so this is the first item in the array
-    //gui_managers now points to a malloc'ed gui_managers struct
+    //context[1] is gui_managers which now points to a malloc'ed gui_managers struct
 
     gui_free(context);
 
     tag_data_free(context);
-    */
+
     FURI_LOG_I(
         "MEMORY",
         "Heap used: %zu bytes, Heap free: %zu bytes",
