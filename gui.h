@@ -17,6 +17,9 @@
 #include <gui/modules/text_box.h>
 #include <gui/modules/widget.h>
 
+// Our includes
+#include "types.h"
+
 // Full definition of the forward-declared struct
 struct gui_components {
     ViewDispatcher* view_dispatcher; // Manages switching between views
@@ -51,7 +54,6 @@ struct gui_components {
 #define USE_WIDGET        false // Not currently used
 
 // Now include files that need the full struct definition
-#include "types.h"
 #include "yrm100.h"
 
 // Scene includes

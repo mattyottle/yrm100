@@ -84,3 +84,9 @@ exit
 ./fbt fap_yrm100
 ./fbt launch APPSRC=yrm100 
 # if the launch hangs try resetting via ocd telnet
+
+
+git add <file>
+git pull
+git commit -m "message"
+git push origin main
