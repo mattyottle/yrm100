@@ -1,5 +1,6 @@
 #include "gui.h"
 #include "yrm100.h"
+#include "types.h"
 
 // Function prototypes
 static bool _gui_init(app_context* context);

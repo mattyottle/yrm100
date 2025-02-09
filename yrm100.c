@@ -6,8 +6,28 @@
 // #define FURI_LOG_LEVEL FURI_LOG_LEVEL_ERROR   // Errors that affect functionality
 // #define FURI_LOG_LEVEL FURI_LOG_LEVEL_FATAL   // Critical errors that may terminate the application
 
-#include "yrm100.h"
+#define TAG "yrm100"
+
+#pragma once
+#include <furi.h>
+#include <furi_hal.h>
+#include "types.h"
 #include "gui.h"
+// This program reads a UHF RFID tag, stores the tag, and writes tags from the store
+
+/*/ Things to remember:
+    // Wrapper function between all functions just in case I need it later
+    // set pointers to null after freeing
+    // the function that calls an allocating function must also call a freeing function
+    // Scenes are generally unloaded when not in use
+*/
+
+//prototypes
+bool main_entry(void* p);
+bool tag_data_init(app_context* context);
+bool tag_data_free(app_context* context);
+static bool _tag_data_init(app_context* context);
+static bool _tag_data_free(app_context* context);
 
 static void log_memory_usage(const char* label, const char* message) {
     FURI_LOG_D(
@@ -17,9 +37,6 @@ static void log_memory_usage(const char* label, const char* message) {
         memmgr_get_total_heap(),
         memmgr_get_free_heap());
 }
-
-static bool _tag_data_init(app_context* context);
-static bool _tag_data_free(app_context* context);
 
 bool main_entry(void* p) {
     UNUSED(p);
@@ -57,6 +74,8 @@ bool main_entry(void* p) {
     }
 
     //call main menu
+    scene_manager_next_scene(context->gui_components->scene_manager, SceneMainMenu_Index);
+    view_dispatcher_run(context->gui_components->view_dispatcher);
 
     //free all allocated objects
     gui_free(context);

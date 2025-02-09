@@ -1,24 +1,33 @@
-#include "confirm_scan_scene.h"
+#pragma once
+#include "../yrm100.h"
+#include <gui/scene_manager.h>
+#include <gui/modules/dialog_ex.h>
 
-static void confirm_scan_dialog_callback(void* context) {
-    YRM100* app = context;
-    DialogEx* dialog = app->gui_m->DialogView;
-    ConfirmScanResult result = dialog_ex_get_result(dialog);
+void confirm_scan_scene_on_enter(void* context);
+bool confirm_scan_scene_on_event(void* context, SceneManagerEvent event);
+void confirm_scan_scene_on_exit(void* context);
 
-    if(result == ConfirmScanResultRescan) {
-        scene_manager_next_scene(app->gui_m->scene_manager, ScanningScene_Index);
-    } else {
-        scene_manager_next_scene(app->gui_m->scene_manager, NameTagScene_Index);
+typedef enum {
+    ConfirmScanResultRescan,
+    ConfirmScanResultContinue,
+} ConfirmScanResult;
+
+static void confirm_scan_dialog_callback(DialogExResult result, void* context) {
+    app_context* app = context;
+
+    if(result == DialogExResultLeft) {
+        scene_manager_next_scene(app->gui_components->scene_manager, SceneScanning_Index);
+    } else if(result == DialogExResultRight) {
+        scene_manager_next_scene(app->gui_components->scene_manager, SceneNameTag_Index);
     }
 }
 
 void confirm_scan_scene_on_enter(void* context) {
-    YRM100* app = context;
-    DialogEx* dialog = app->gui_m->DialogView;
+    app_context* app = context;
+    DialogEx* dialog = app->gui_components->dialog;
 
     // Format scanned tag data for display
     char tag_info[64];
-    snprintf(tag_info, sizeof(tag_info), "Tag ID: %s\nType: %s", app->tag_id, app->tag_type);
 
     dialog_ex_reset(dialog);
     dialog_ex_set_header(dialog, "Tag Found!", 64, 2, AlignCenter, AlignTop);
@@ -28,7 +37,7 @@ void confirm_scan_scene_on_enter(void* context) {
     dialog_ex_set_result_callback(dialog, confirm_scan_dialog_callback);
     dialog_ex_set_context(dialog, app);
 
-    view_dispatcher_switch_to_view(app->gui_m->view_dispatcher, DialogView_Index);
+    view_dispatcher_switch_to_view(app->gui_components->view_dispatcher, ViewDialog_Index);
 }
 
 bool confirm_scan_scene_on_event(void* context, SceneManagerEvent event) {
@@ -43,6 +52,6 @@ bool confirm_scan_scene_on_event(void* context, SceneManagerEvent event) {
 }
 
 void confirm_scan_scene_on_exit(void* context) {
-    YRM100* app = context;
-    dialog_ex_reset(app->gui_m->DialogView);
+    app_context* app = context;
+    dialog_ex_reset(app->gui_components->dialog);
 }

@@ -1,40 +1,55 @@
-#include "main_menu_scene.h"
+#pragma once
+#include <gui/scene_manager.h>
+#include <gui/modules/dialog_ex.h>
+#include "../types.h"
+#include "../gui.h"
 
-static void main_menu_dialog_callback(void* context) {
-    YRM100* app = context;
-    DialogEx* dialog = app->gui_m->DialogView;
-    MainMenuResult result = dialog_ex_get_result(dialog);
+// Scene event handlers
+void main_menu_scene_on_enter(void* context);
+bool main_menu_scene_on_event(void* context, SceneManagerEvent event);
+void main_menu_scene_on_exit(void* context);
 
-    switch(result) {
-    case MainMenuResultScan:
-        scene_manager_next_scene(app->gui_m->scene_manager, ScanOptionsScene_Index);
-        break;
-    case MainMenuResultWrite:
-        scene_manager_next_scene(app->gui_m->scene_manager, WriteTagScene_Index);
-        break;
-    case MainMenuResultLoad:
-        scene_manager_next_scene(app->gui_m->scene_manager, LoadTagScene_Index);
-        break;
-    case MainMenuResultSave:
-        scene_manager_next_scene(app->gui_m->scene_manager, SaveTagScene_Index);
-        break;
+static void main_menu_dialog_callback(DialogExResult result, void* context) {
+    app_context* app = context;
+
+    if(result == DialogExResultLeft) {
+        scene_manager_next_scene(app->gui_components->scene_manager, SceneScanOptions_Index);
+    } else if(result == DialogExResultRight && app->uhf_tag->is_loaded) {
+        // Only handle write button if tag is loaded
+        scene_manager_next_scene(app->gui_components->scene_manager, SceneWriteTag_Index);
+    } else if(result == DialogExResultCenter) {
+        if(app->uhf_tag->is_loaded) {
+            scene_manager_next_scene(app->gui_components->scene_manager, SceneSaveTag_Index);
+        } else {
+            scene_manager_next_scene(app->gui_components->scene_manager, SceneLoadTag_Index);
+        }
     }
+    // Other results (Back, etc) do nothing
 }
 
 void main_menu_scene_on_enter(void* context) {
-    YRM100* app = context;
-    DialogEx* dialog = app->gui_m->DialogView;
+    app_context* app = context;
+    DialogEx* dialog = app->gui_components->dialog;
 
     dialog_ex_reset(dialog);
-    dialog_ex_set_header(dialog, "YRM100 Reader", 64, 2, AlignCenter, AlignTop);
+
+    if(app->uhf_tag->is_loaded) {
+        char header[32];
+        snprintf(header, sizeof(header), "[Loaded] %s", app->uhf_tag->tag_name);
+        dialog_ex_set_header(dialog, header, 64, 2, AlignCenter, AlignTop);
+        dialog_ex_set_right_button_text(dialog, "Write"); // Only show write button when tag loaded
+    } else {
+        dialog_ex_set_header(dialog, "[No Tag]", 64, 2, AlignCenter, AlignTop);
+        dialog_ex_set_right_button_text(dialog, NULL); // Hide write button when no tag
+    }
+
     dialog_ex_set_text(dialog, "Choose action:", 64, 32, AlignCenter, AlignCenter);
     dialog_ex_set_left_button_text(dialog, "Scan");
-    dialog_ex_set_right_button_text(dialog, "Write");
-    dialog_ex_set_center_button_text(dialog, app->tag_data_loaded ? "Save" : "Load");
+    dialog_ex_set_center_button_text(dialog, "Load");
     dialog_ex_set_result_callback(dialog, main_menu_dialog_callback);
     dialog_ex_set_context(dialog, app);
 
-    view_dispatcher_switch_to_view(app->gui_m->view_dispatcher, DialogView_Index);
+    view_dispatcher_switch_to_view(app->gui_components->view_dispatcher, ViewDialog_Index);
 }
 
 bool main_menu_scene_on_event(void* context, SceneManagerEvent event) {
@@ -44,6 +59,6 @@ bool main_menu_scene_on_event(void* context, SceneManagerEvent event) {
 }
 
 void main_menu_scene_on_exit(void* context) {
-    YRM100* app = context;
-    dialog_ex_reset(app->gui_m->DialogView);
+    app_context* app = context;
+    dialog_ex_reset(app->gui_components->dialog);
 }
