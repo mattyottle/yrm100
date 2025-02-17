@@ -86,7 +86,7 @@ static bool _gui_init(app_context* context) {
     }
     view_dispatcher_add_view(
         gui_components->view_dispatcher,
-        ViewSubmenu_Index, // Updated from SubmenuView_Index
+        ViewSubmenu_Index,
         submenu_get_view(gui_components->submenu));
 #endif
 
@@ -98,7 +98,7 @@ static bool _gui_init(app_context* context) {
     }
     view_dispatcher_add_view(
         gui_components->view_dispatcher,
-        ViewTextInput_Index, // Updated from TextInputView_Index
+        ViewTextInput_Index, 
         text_input_get_view(gui_components->text_input));
 #endif
 
@@ -110,7 +110,7 @@ static bool _gui_init(app_context* context) {
     }
     view_dispatcher_add_view(
         gui_components->view_dispatcher,
-        ViewVariableList_Index, // Updated from VariableItemListView_Index
+        ViewVariableList_Index, 
         variable_item_list_get_view(gui_components->variable_item_list));
 #endif
 
@@ -122,7 +122,7 @@ static bool _gui_init(app_context* context) {
     }
     view_dispatcher_add_view(
         gui_components->view_dispatcher,
-        ViewDialog_Index, // Updated from DialogView_Index
+        ViewDialog_Index, 
         dialog_ex_get_view(gui_components->dialog));
 #endif
 
@@ -134,7 +134,7 @@ static bool _gui_init(app_context* context) {
     }
     view_dispatcher_add_view(
         gui_components->view_dispatcher,
-        ViewLoading_Index, // Updated from LoadingView_Index
+        ViewLoading_Index, 
         loading_get_view(gui_components->loading));
 #endif
 
@@ -146,7 +146,7 @@ static bool _gui_init(app_context* context) {
     }
     view_dispatcher_add_view(
         gui_components->view_dispatcher,
-        ViewButtonMenu_Index, // Updated from ButtonMenuView_Index
+        ViewButtonMenu_Index, 
         button_menu_get_view(gui_components->button_menu));
 #endif
 
@@ -158,7 +158,7 @@ static bool _gui_init(app_context* context) {
     }
     view_dispatcher_add_view(
         gui_components->view_dispatcher,
-        ViewButtonPanel_Index, // Updated from ButtonPanelView_Index
+        ViewButtonPanel_Index, 
         button_panel_get_view(gui_components->button_panel));
 #endif
 
@@ -170,7 +170,7 @@ static bool _gui_init(app_context* context) {
     }
     view_dispatcher_add_view(
         gui_components->view_dispatcher,
-        ViewByteInput_Index, // Updated from ByteInputView_Index
+        ViewByteInput_Index, 
         byte_input_get_view(gui_components->byte_input));
 #endif
 
@@ -182,7 +182,7 @@ static bool _gui_init(app_context* context) {
     }
     view_dispatcher_add_view(
         gui_components->view_dispatcher,
-        ViewPopup_Index, // Updated from PopupView_Index
+        ViewPopup_Index,
         popup_get_view(gui_components->popup));
 #endif
 
@@ -194,7 +194,7 @@ static bool _gui_init(app_context* context) {
     }
     view_dispatcher_add_view(
         gui_components->view_dispatcher,
-        ViewTextBox_Index, // Updated from TextBoxView_Index
+        ViewTextBox_Index, 
         text_box_get_view(gui_components->text_box));
 #endif
 
@@ -206,7 +206,7 @@ static bool _gui_init(app_context* context) {
     }
     view_dispatcher_add_view(
         gui_components->view_dispatcher,
-        ViewWidget_Index, // Updated from WidgetView_Index
+        ViewWidget_Index,
         widget_get_view(gui_components->widget));
 #endif
 
@@ -229,7 +229,7 @@ static bool _gui_free(app_context* context) {
     // Remove views and free their components
     if(gui_components->submenu) {
         view_dispatcher_remove_view(
-            gui_components->view_dispatcher, ViewSubmenu_Index); // Updated from SubmenuView_Index
+            gui_components->view_dispatcher, ViewSubmenu_Index); 
         submenu_free(gui_components->submenu);
         gui_components->submenu = NULL;
     }
@@ -237,7 +237,7 @@ static bool _gui_free(app_context* context) {
     if(gui_components->text_input) {
         view_dispatcher_remove_view(
             gui_components->view_dispatcher,
-            ViewTextInput_Index); // Updated from TextInputView_Index
+            ViewTextInput_Index); 
         text_input_free(gui_components->text_input);
         gui_components->text_input = NULL;
     }
@@ -245,21 +245,21 @@ static bool _gui_free(app_context* context) {
     if(gui_components->variable_item_list) {
         view_dispatcher_remove_view(
             gui_components->view_dispatcher,
-            ViewVariableList_Index); // Updated from VariableItemListView_Index
+            ViewVariableList_Index); 
         variable_item_list_free(gui_components->variable_item_list);
         gui_components->variable_item_list = NULL;
     }
 
     if(gui_components->dialog) {
         view_dispatcher_remove_view(
-            gui_components->view_dispatcher, ViewDialog_Index); // Updated from DialogView_Index
+            gui_components->view_dispatcher, ViewDialog_Index); 
         dialog_ex_free(gui_components->dialog);
         gui_components->dialog = NULL;
     }
 
     if(gui_components->loading) {
         view_dispatcher_remove_view(
-            gui_components->view_dispatcher, ViewLoading_Index); // Updated from LoadingView_Index
+            gui_components->view_dispatcher, ViewLoading_Index); 
         loading_free(gui_components->loading);
         gui_components->loading = NULL;
     }
@@ -267,7 +267,7 @@ static bool _gui_free(app_context* context) {
     if(gui_components->button_menu) {
         view_dispatcher_remove_view(
             gui_components->view_dispatcher,
-            ViewButtonMenu_Index); // Updated from ButtonMenuView_Index
+            ViewButtonMenu_Index);
         button_menu_free(gui_components->button_menu);
         gui_components->button_menu = NULL;
     }
@@ -275,7 +275,7 @@ static bool _gui_free(app_context* context) {
     if(gui_components->button_panel) {
         view_dispatcher_remove_view(
             gui_components->view_dispatcher,
-            ViewButtonPanel_Index); // Updated from ButtonPanelView_Index
+            ViewButtonPanel_Index); 
         button_panel_free(gui_components->button_panel);
         gui_components->button_panel = NULL;
     }
@@ -283,28 +283,28 @@ static bool _gui_free(app_context* context) {
     if(gui_components->byte_input) {
         view_dispatcher_remove_view(
             gui_components->view_dispatcher,
-            ViewByteInput_Index); // Updated from ByteInputView_Index
+            ViewByteInput_Index);
         byte_input_free(gui_components->byte_input);
         gui_components->byte_input = NULL;
     }
 
     if(gui_components->popup) {
         view_dispatcher_remove_view(
-            gui_components->view_dispatcher, ViewPopup_Index); // Updated from PopupView_Index
+            gui_components->view_dispatcher, ViewPopup_Index); 
         popup_free(gui_components->popup);
         gui_components->popup = NULL;
     }
 
     if(gui_components->text_box) {
         view_dispatcher_remove_view(
-            gui_components->view_dispatcher, ViewTextBox_Index); // Updated from TextBoxView_Index
+            gui_components->view_dispatcher, ViewTextBox_Index);
         text_box_free(gui_components->text_box);
         gui_components->text_box = NULL;
     }
 
     if(gui_components->widget) {
         view_dispatcher_remove_view(
-            gui_components->view_dispatcher, ViewWidget_Index); // Updated from WidgetView_Index
+            gui_components->view_dispatcher, ViewWidget_Index); 
         widget_free(gui_components->widget);
         gui_components->widget = NULL;
     }

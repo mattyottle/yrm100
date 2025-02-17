@@ -17,8 +17,8 @@
 #include <gui/modules/text_box.h>
 #include <gui/modules/widget.h>
 
-// Our includes
-#include "types.h"
+// program related includes
+#include "yrm100_app.h"  // Updated include
 
 // Full definition of the forward-declared struct
 struct gui_components {
@@ -54,7 +54,7 @@ struct gui_components {
 #define USE_WIDGET        false // Not currently used
 
 // Now include files that need the full struct definition
-#include "yrm100.h"
+#include "yrm100_app.h"  // Updated include
 
 // Scene includes
 #include "scenes/main_menu_scene.h"
@@ -67,6 +67,7 @@ struct gui_components {
 #include "scenes/load_tag_scene.h"
 
 //the different views get referred to by number
+//enums are inlcuded for all modules, but would only be used if the module is enabled in the defines above
 typedef enum {
     ViewSubmenu_Index,
     ViewTextInput_Index,
@@ -96,9 +97,42 @@ typedef enum {
 
 static const SceneManagerHandlers SceneManager_Handlers_Arrays;
 
-// Prototypes for functions
+/**
+ * @brief Initialize the GUI components.
+ * 
+ * @param context The application context.
+ * @return true if initialization was successful, false otherwise.
+ */
 bool gui_init(app_context* context);
+
+/**
+ * @brief Free the GUI components.
+ * 
+ * @param context The application context.
+ * @return true if freeing was successful, false otherwise.
+ */
 bool gui_free(app_context* context);
+
+/**
+ * @brief Custom event callback for the GUI.
+ * 
+ * @param context The application context.
+ * @param event The custom event.
+ * @return true if the event was handled, false otherwise.
+ */
 bool custom_event_callback(void* context, uint32_t event);
+
+/**
+ * @brief Back event callback for the GUI.
+ * 
+ * @param context The application context.
+ * @return true if the event was handled, false otherwise.
+ */
 bool back_event_callback(void* context);
+
+/**
+ * @brief Tick event callback for the GUI.
+ * 
+ * @param context The application context.
+ */
 void uhf_tick_event_callback(void* context);

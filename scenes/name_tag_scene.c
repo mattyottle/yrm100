@@ -4,54 +4,44 @@
 #include <gui/scene_manager.h>
 #include <gui/modules/text_input.h>
 
-void name_tag_scene_on_enter(void* context);
-bool name_tag_scene_on_event(void* context, SceneManagerEvent event);
-void name_tag_scene_on_exit(void* context);
+void name_tag_scene_on_enter(void* _context);
+bool name_tag_scene_on_event(void* _context, SceneManagerEvent event);
+void name_tag_scene_on_exit(void* _context);
 
-static void name_tag_text_input_callback(void* context) {
-    void** ctx_array = context;
-    gui_managers* gui_m = ctx_array[gui_context];
-    uhf_tag* active_tag = ctx_array[tag_data];
-    char* buffer = ctx_array[text_buffer];
+static void name_tag_text_input_callback(void* _context) {
+    app_context* context = _context;
+    TextInput* text_input = context->gui_components->text_input;
+    const char* input_text = text_input_get_text(text_input);
 
     // Copy buffer contents to tag name
-    strncpy(active_tag->tag_name, buffer, TAG_NAME_MAX_LENGTH);
-    active_tag->is_loaded = true;
+    strncpy(context->uhf_tag->tag_name, input_text, TAG_NAME_MAX_LENGTH);
+    context->uhf_tag->is_loaded = true;
 
     // Move to main menu
-    scene_manager_next_scene(gui_m->scene_manager, MainMenuScene_Index);
+    scene_manager_next_scene(context->gui_components->scene_manager, SceneMainMenu_Index);
 }
 
-void name_tag_scene_on_enter(void* context) {
-    void** ctx_array = context;
-    gui_managers* gui_m = ctx_array[gui_context];
-    char* buffer = ctx_array[text_buffer];
-    TextInput* text_input = gui_m->TextInputView;
+void name_tag_scene_on_enter(void* _context) {
+    app_context* context = _context;
+    TextInput* text_input = context->gui_components->text_input;
 
     text_input_reset(text_input);
     text_input_set_header_text(text_input, "Enter Tag Name");
     text_input_set_result_callback(
-        text_input, name_tag_text_input_callback, context, buffer, TAG_NAME_MAX_LENGTH, true);
+        text_input, name_tag_text_input_callback, context);
+    text_input_set_min_length(text_input, 1);
+    text_input_set_max_length(text_input, TAG_NAME_MAX_LENGTH);
 
-    text_input_set_minimum_length(text_input, 1);
-    text_input_set_maximum_length(text_input, TAG_NAME_MAX_LENGTH);
-
-    view_dispatcher_switch_to_view(gui_m->view_dispatcher, TextInputView_Index);
+    view_dispatcher_switch_to_view(context->gui_components->view_dispatcher, ViewTextInput_Index);
 }
 
-bool name_tag_scene_on_event(void* context, SceneManagerEvent event) {
-    UNUSED(context);
-    bool consumed = false;
-
-    if(event.type == SceneManagerEventTypeCustom) {
-        consumed = true;
-    }
-
-    return consumed;
+bool name_tag_scene_on_event(void* _context, SceneManagerEvent event) {
+    UNUSED(_context);
+    //no events anticipated
+    return false;
 }
 
-void name_tag_scene_on_exit(void* context) {
-    void** ctx_array = context;
-    gui_managers* gui_m = ctx_array[gui_context];
-    text_input_reset(gui_m->TextInputView);
+void name_tag_scene_on_exit(void* _context) {
+    app_context* context = _context;
+    text_input_reset(context->gui_components->text_input);
 }

@@ -1,64 +1,69 @@
 #pragma once
 #include <gui/scene_manager.h>
 #include <gui/modules/dialog_ex.h>
-#include "../types.h"
+#include "../yrm100_app.h"
 #include "../gui.h"
 
 // Scene event handlers
-void main_menu_scene_on_enter(void* context);
-bool main_menu_scene_on_event(void* context, SceneManagerEvent event);
-void main_menu_scene_on_exit(void* context);
+void main_menu_scene_on_enter(void* _context);
+bool main_menu_scene_on_event(void* _context, SceneManagerEvent event);
+void main_menu_scene_on_exit(void* _context);
 
-static void main_menu_dialog_callback(DialogExResult result, void* context) {
-    app_context* app = context;
+static void main_menu_dialog_callback(DialogExResult result, void* _context) {
+    app_context* context = _context;
 
     if(result == DialogExResultLeft) {
-        scene_manager_next_scene(app->gui_components->scene_manager, SceneScanOptions_Index);
-    } else if(result == DialogExResultRight && app->uhf_tag->is_loaded) {
-        // Only handle write button if tag is loaded
-        scene_manager_next_scene(app->gui_components->scene_manager, SceneWriteTag_Index);
+        // Selection is "scan"
+        scene_manager_next_scene(context->gui_components->scene_manager, SceneScanOptions_Index);
+    } else if(result == DialogExResultRight) {
+        // Selection is "write"
+        // to do: write functionality
+        // scene_manager_next_scene(context->gui_components->scene_manager, SceneWriteTag_Index);
+        quick_vibration_pulses(2);
     } else if(result == DialogExResultCenter) {
-        if(app->uhf_tag->is_loaded) {
-            scene_manager_next_scene(app->gui_components->scene_manager, SceneSaveTag_Index);
-        } else {
-            scene_manager_next_scene(app->gui_components->scene_manager, SceneLoadTag_Index);
-        }
+        // selection is "load"
+        // to do: load functionality
+        // scene_manager_next_scene(context->gui_components->scene_manager, SceneLoadTag_Index);
+        quick_vibration_pulses(2);
+    } else {
+        FURI_LOG_W(TAG, "unexpected result in main menu dialog callback: %d", result);
+        quick_vibration_pulses(2);
     }
-    // Other results (Back, etc) do nothing
 }
 
-void main_menu_scene_on_enter(void* context) {
-    app_context* app = context;
-    DialogEx* dialog = app->gui_components->dialog;
+void main_menu_scene_on_enter(void* _context) {
+    app_context* context = _context;
+    DialogEx* dialog = context->gui_components->dialog;
 
     dialog_ex_reset(dialog);
 
-    if(app->uhf_tag->is_loaded) {
-        char header[32];
-        snprintf(header, sizeof(header), "[Loaded] %s", app->uhf_tag->tag_name);
-        dialog_ex_set_header(dialog, header, 64, 2, AlignCenter, AlignTop);
+    dialog_ex_set_header(dialog, "UHF RFID", 64, 2, AlignCenter, AlignTop);
+    if(context->uhf_tag->is_loaded) {
+        char textarray[32];
+        snprintf(textarray, sizeof(textarray), "[Tag Loaded] %s", context->uhf_tag->tag_name);
+        dialog_ex_set_text(dialog, textarray, 64, 32, AlignCenter, AlignCenter);
         dialog_ex_set_right_button_text(dialog, "Write"); // Only show write button when tag loaded
     } else {
-        dialog_ex_set_header(dialog, "[No Tag]", 64, 2, AlignCenter, AlignTop);
+        dialog_ex_set_header(dialog, "[No Tag Loaded]", 64, 2, AlignCenter, AlignTop);
         dialog_ex_set_right_button_text(dialog, NULL); // Hide write button when no tag
     }
 
-    dialog_ex_set_text(dialog, "Choose action:", 64, 32, AlignCenter, AlignCenter);
     dialog_ex_set_left_button_text(dialog, "Scan");
     dialog_ex_set_center_button_text(dialog, "Load");
     dialog_ex_set_result_callback(dialog, main_menu_dialog_callback);
-    dialog_ex_set_context(dialog, app);
+    dialog_ex_set_context(dialog, context);
 
-    view_dispatcher_switch_to_view(app->gui_components->view_dispatcher, ViewDialog_Index);
+    view_dispatcher_switch_to_view(context->gui_components->view_dispatcher, ViewDialog_Index);
 }
 
-bool main_menu_scene_on_event(void* context, SceneManagerEvent event) {
-    UNUSED(context);
+bool main_menu_scene_on_event(void* _context, SceneManagerEvent event) {
+    UNUSED(_context);
     UNUSED(event);
+    //no external events anticipated during this scene
     return false;
 }
 
-void main_menu_scene_on_exit(void* context) {
-    app_context* app = context;
-    dialog_ex_reset(app->gui_components->dialog);
+void main_menu_scene_on_exit(void* _context) {
+    app_context* context = _context;
+    dialog_ex_reset(context->gui_components->dialog);
 }

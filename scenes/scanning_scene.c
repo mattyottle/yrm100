@@ -1,59 +1,71 @@
-#pragma once
-#include "../yrm100.h"
+#include "../yrm100_app.h"
 #include "../gui.h"
 #include <gui/modules/loading.h>
 #include <gui/scene_manager.h>
-#include <icons.h>
+#include <notification/notification_messages.h>
 
-void scanning_scene_on_enter(void* context);
-bool scanning_scene_on_event(void* context, SceneManagerEvent event);
-void scanning_scene_on_exit(void* context);
+void scanning_scene_on_enter(void* _context) {
+    app_context* context = _context;
+    Loading* loading = context->gui_components->loading;
 
-void loading_set_header(Loading* loading, const char* text);
-void loading_set_text(Loading* loading, const char* text);
-void loading_set_icon(Loading* loading, const Icon* icon);
-void loading_set_callback(Loading* loading, LoadingCallback callback);
-void loading_set_context(Loading* loading, void* context);
-
-static void scanning_timeout_callback(void* context) {
-    app_context* app = context;
-    scene_manager_next_scene(app->gui_components->scene_manager, ConfirmScanScene_Index);
-}
-
-void scanning_scene_on_enter(void* context) {
-    app_context* app = context;
-    Loading* loading = app->gui_components->loading;
-
+    // Reset and configure loading view
     loading_reset(loading);
-    loading_set_header(loading, "Scanning");
-    loading_set_text(loading, "Searching for UHF tags...");
-    loading_set_icon(loading, &I_Loading_24); // Built-in loading animation
-    loading_set_callback(loading, scanning_timeout_callback);
-    loading_set_context(loading, app);
+    
+    // Switch to loading view before starting scan
+    view_dispatcher_switch_to_view(context->gui_components->view_dispatcher, ViewLoading_Index);
 
-    view_dispatcher_switch_to_view(app->gui_components->view_dispatcher, ViewLoading_Index);
+    // to do allocate buffer for tag data
 
-    // Start the actual scanning process
-    // TODO: Implement your tag scanning logic here
+    // Indicate scan start with vibration
+    quick_vibration_pulses(1);
+    
+    context->hw_state->status_flag = Yrm100StatusScanning;
+
+    if (!yrm100_start_scan(context, buffer)){
+        // log error if the scan didn't start
+        FURI_LOG_E(TAG, "Scanning scene failed to start scan");
+
+    }
+
 }
 
-bool scanning_scene_on_event(void* context, SceneManagerEvent event) {
-    UNUSED(context);
+bool scanning_scene_on_event(void* _context, SceneManagerEvent event) {
+    app_context* context = _context;
     bool consumed = false;
 
     switch(event.type) {
-    case SceneManagerEventTypeTick:
-        // Update scan progress if needed
-        consumed = true;
-        break;
-    default:
-        break;
+        case SceneManagerEventTypeTick:
+            // Check current status
+            if(context->hw_state->status_flag != Yrm100StatusScanning) {
+                // Only transition when we're no longer scanning
+                scene_manager_next_scene(context->gui_components->scene_manager, SceneConfirmScan_Index);
+                consumed = true;
+            }
+            break;
+           
+        case SceneManagerEventTypeBack:
+            // Stop scan.  Leads to a return to previous scene on next tick.
+            yrm100_stop_scan();
+            consumed = true;
+            break;
+            
+        default:
+            FURI_LOG_W(TAG, "Scanning scene unhandled event: type %d, event %ld", event.type, event.event);
+            break;
     }
 
     return consumed;
 }
 
-void scanning_scene_on_exit(void* context) {
-    app_context* app = context;
-    loading_reset(app->gui_components->loading);
+void scanning_scene_on_exit(void* _context) {
+    app_context* context = _context;
+    Loading* loading = context->gui_components->loading;
+
+    // Ensure scan is stopped
+    yrm100_stop_scan();
+
+    // to do - free buffer for tag data
+    
+    // Reset loading view
+    loading_reset(loading);
 }

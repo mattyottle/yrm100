@@ -90,3 +90,22 @@ git add <file>
 git pull
 git commit -m "message"
 git push origin main
+
+
+
+# new environment setup
+install wsl & launch from terminal
+open vscode and connect to wsl
+install ufbt (https://instantiator.dev/post/flipper-zero-app-tutorial-01/) or fbt
+do fbt vscode_dist, and install recommended extensions. Maybe also copilot or similar.
+install git & pull flipper repo.  add own repo as a submodule.
+
+
+# to do
+working on replacing private email in GitHub repo
+
+press back from main menu to exit	
+
+plan to detect password protected tags
+
+future feature - weak pws, hammering (session hopping, deactivate field for however long)
